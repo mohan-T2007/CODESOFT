@@ -1,0 +1,60 @@
+#include <opencv2/opencv.hpp>
+#include <iostream>
+
+using namespace cv;
+using namespace std;
+
+int main() {
+    string imagePath;
+    cout << "Enter image path: ";
+    cin >> imagePath;
+
+    Mat image = imread(imagePath);
+
+    if (image.empty()) {
+        cout << "Error loading image!" << endl;
+        return -1;
+    }
+
+    imshow("Original Image", image);
+
+    // Grayscale
+    Mat gray;
+    cvtColor(image, gray, COLOR_BGR2GRAY);
+    imshow("Grayscale", gray);
+
+    // Blur
+    Mat blurImg;
+    GaussianBlur(image, blurImg, Size(15, 15), 0);
+    imshow("Blur", blurImg);
+
+    // Sharpen
+    Mat sharpen;
+    Mat kernel = (Mat_<float>(3,3) <<
+        0,-1,0,
+       -1,5,-1,
+        0,-1,0);
+
+    filter2D(image, sharpen, image.depth(), kernel);
+    imshow("Sharpen", sharpen);
+
+    // Resize
+    Mat resized;
+    resize(image, resized, Size(300,300));
+    imshow("Resized", resized);
+
+    // Crop
+    Rect region(50, 50, 200, 200);
+    Mat cropped = image(region);
+    imshow("Cropped", cropped);
+
+    // Save image
+    imwrite("processed_image.jpg", sharpen);
+
+    cout << "Processed image saved as processed_image.jpg" << endl;
+
+    waitKey(0);
+    destroyAllWindows();
+
+    return 0;
+}
